@@ -31,3 +31,26 @@ def load_defaults(fontsize = 17, figsize = [12.0, 6.0], font = 'Calibri', grid =
     # Color
     mpl.rcParams['savefig.dpi']= 120
     
+    
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from statsmodels.graphics.regressionplots import plot_leverage_resid2
+from statsmodels.graphics.regressionplots import influence_plot
+fig, axes = plt.subplots(2, 2, figsize = (15, 8), tight_layout = True)
+
+        # Autocorrelation between Residuals
+        plot_acf(model_for_report.resid, ax = axes[0,0])
+        axes[0, 0].set_title('Residual Autocorrelation')
+
+        # Leverage Plot
+        plot_leverage_resid2(model_for_report, alpha=0.05, ax = axes[0, 1])
+
+        # Influence Plot
+        influence_plot(model_for_report, external=True, alpha=0.05, criterion='cooks', size=48, plot_alpha=0.75, ax=axes[1, 0])
+
+        # PPPlot
+        resid = model_for_report.resid.values
+        resid = resid[resid.argsort()]
+        #resid = standardize(resid)
+        resid = stats.zscore(resid)
+        sm.ProbPlot(resid).ppplot(line = '45', ax = axes[1,1])
+        save('Diagnostics.png', output_feature_directory)
